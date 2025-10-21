@@ -1,35 +1,21 @@
-#include <stdbool.h>
 #include "ouroc.h"
 #define OUROC_IMPLI
 
-/*THIS IS AN BOILER PLATE FOR A BUILDER FILE*/
+#define FILE_TO_BUILD "main.cpp"
+#define SOLUTION_BIN "main"
 
-int main(int argc,char*argv[]){
-    bool run = false;
-    if(argc >= 2){
-        if(strcmp(argv[1],"run") == 0) run = true;
-    }
-    Builder tester = {
-        .bdir = NULL,
-        .buffer_used = 0,
-        .buffer_max = 256
-    };
-    initbuilder(&tester);
+int main(int argc,char** argv){
+    OUROC(main,SOLUTION_BIN,FILE_TO_BUILD);
+    OUROC_BUILD_CMD(&main,"g++ -Wall -Wextra",FILE_TO_BUILD,"-o",SOLUTION_BIN);
 
-    tester.appendcc(&tester,"g++");
-    tester.appendtarget(&tester,"main");
-    tester.appendsrcs(&tester,"main.cpp");
+    OUROC(run,NULL,SOLUTION_BIN);
+    OUROC_BUILD_CMD(&run,"./"SOLUTION_BIN);
 
-    tester.appendflags(&tester,"-Wall");
-    tester.appendflags(&tester,"-Wextra");
-    tester.appendflags(&tester,"-o");
 
-    tester.construct(&tester);
-    SHOWCOMMAND(tester);
-    int result = tester.execute(&tester);
-    tester.clean_up(&tester);
+    ouroc_run_cmd(&main);
+    ouroc_run_cmd(&run);
 
-    if(run && result == 0) system("./main");
-
+    OUROC_KILL(&main);
+    OUROC_KILL(&run);
     return 0;
 }
